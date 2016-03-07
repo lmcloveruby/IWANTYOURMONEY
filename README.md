@@ -1,6 +1,4 @@
-# IWANTYOURMONEY
-
-## For Futrue ##
+## IWYM ##
 
 > 一些资源
 
