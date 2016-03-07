@@ -9,3 +9,5 @@ python基础：http://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949d
 django教程：http://www.ziqiangxuetang.com/django/django-template2.html
 
 财经数据包：http://tushare.org/index.html
+
+...
