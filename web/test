@@ -1,0 +1,124 @@
+
+    @Override
+    public List<FwtZzJg> findApprovalPersonMembersByRoleId(String roleId, String bm, String glm,
+                                                           boolean includeAllChildren) {
+        Validate.notBlank(roleId, "角色编号roleId不能为空");
+        Validate.notBlank(bm, "机构编码bm不能为空");
+        Validate.notBlank(glm, "辖区代码glm不能为空");
+
+        List<FwtZzJg> result = Lists.newArrayList();
+
+        // 1. 找出bm对应的组织节点
+        List<FwtZzJg> parents = findByBm(bm);
+
+        for (FwtZzJg parent : parents) {
+            // 2. 获取下级节点人员
+            List<FwtZzJg> psmList = findPersonMembers(parent, includeAllChildren);
+
+            if (psmList.isEmpty()) {
+                logger.debug("未找到roleId={}, bm={}, glm={}的组织人员.", roleId, bm, glm);
+                continue;
+            }
+
+            OrgXqdmRuleEngine engine = OrgRuleEngineUtils.getXqdmRuleEngine(parent.getZzid());
+            String shortGlm = engine.toShort(glm, parent.getLx());
+
+            for (FwtZzJg psm : psmList) {
+                // 3. 判断用户是否拥有多glm这个范围的操作权限.
+                if (hasPermission(psm, shortGlm)) {
+                    // 4. 判断用户是否拥有roleId角色
+                    if (containRoleId(psm, roleId)) {
+                        result.add(psm);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private List<FwtZzJg> findByBm(String bm) {
+        String typeRoot = null;
+        User user = CurrentUserUtils.getUser();
+
+        if (user != null) {
+            typeRoot = getTypeRoot(user.getId());
+        }
+
+        QFwtZzJg qFwtZzJg = QFwtZzJg.fwtZzJg;
+        BooleanExpression bmExp = qFwtZzJg.bm.eq(bm).and(qFwtZzJg.yxqk.eq(Constants.YES));
+
+        if (StringUtils.isNotBlank(typeRoot)) {
+            bmExp = bmExp.and(qFwtZzJg.qljid.like(Constants.SLASH
+                    + typeRoot + Constants.PERCENT));
+        }
+
+        return (List<FwtZzJg>) findAll(bmExp);
+    }
+
+    /**
+     * 获取指定组织的组织人员.
+     *
+     * @param parent             父组织
+     * @param includeAllChildren 是否包括所有的子孙(该属性只对org类型的节点有效),
+     *                           如果为false只获取子节点
+     */
+    private List<FwtZzJg> findPersonMembers(FwtZzJg parent,
+                                            boolean includeAllChildren) {
+        QFwtZzJg qFwtZzJg = QFwtZzJg.fwtZzJg;
+        String qljidCondition = parent.getQljid() + Constants.PERCENT;
+        BooleanExpression exp = qFwtZzJg.qljid.like(qljidCondition)
+                .and(qFwtZzJg.yxqk.eq(Constants.YES))
+                .and(qFwtZzJg.lx.eq(OrganizationType.psm.getValue()));
+
+            /* includeAllChildren参数只对parent.getLx() == org的有效, 原因:
+             * 部门下只能建岗位或人员, 岗位下只能建人员, 所以不会涉及到很深的层次结构,
+             * 层级最多只有2级: 部门(parent) > 岗位 > 人员. */
+        if (OrganizationType.org.getValue().equals(parent.getLx())
+                && !includeAllChildren) {
+            exp = exp.and(qFwtZzJg.qljid.notLike(qljidCondition + Constants.DOT
+                    + OrganizationType.org.getValue() + Constants.PERCENT))
+                    .and(qFwtZzJg.cj.gt(parent.getCj()))
+                    .and(qFwtZzJg.cj.loe(parent.getCj() + 2));
+        }
+
+        return (List<FwtZzJg>) dao.findAll(exp);
+    }
+
+    /**
+     * 判断用户是否拥有对指定glm的操作权限.
+     *
+     * @param psm       组织人员
+     * @param targetGlm 过滤码
+     * @return  有操作权限返回true, 否则返回null.
+     */
+    private boolean hasPermission(FwtZzJg psm, String targetGlm) {
+        UserCxglmAndBjglm ucab = yhsjfwService.getUserCxglmAndBjglm(psm);
+
+        if (CollectionUtils.isEmpty(ucab.getBjglm())) {
+            logger.warn("系统逻辑: 组织人员(zzid={}, qljmc={})未设置数据范围",
+                    psm.getZzid(), psm.getQljmc());
+            return false;
+        }
+
+        // 判断是否有编辑权限
+        for (String bjglm : ucab.getBjglm()) {
+            if (targetGlm.startsWith(bjglm)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean containRoleId(FwtZzJg psm, String roleId) {
+        List<FwtQxYhqx> yhqxList = yhqxService.findRoles(psm.getZzid(), true);
+
+        for (FwtQxYhqx yhqx : yhqxList) {
+            if (yhqx.getFwtQxQxz().getQxzbh().equals(roleId)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
