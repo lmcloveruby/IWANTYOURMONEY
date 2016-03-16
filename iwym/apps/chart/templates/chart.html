@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}K线{% endblock %}
+
+{% block content %}
+    <div id="msg_container"></div>
+
+    <div class="row">
+        <div class="col-md-9">
+        </div>
+        <div class="col-md-3">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="请输入股票代码">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="btn_search_stock">Go!</button>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div id="container" style="height: 400px; min-width: 310px"></div>
+    <script>
+        function showAlert(msg, type) {
+            type = type || 'danger';
+            $('<div class="alert alert-' + type + ' alert-dismissible" role="alert">' +
+                '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                '<span aria-hidden="true">&times;</span></button>' +
+                msg +
+                '</div>').appendTo('#msg_container');
+        }
+
+        $(function () {
+            $('#btn_search_stock').on('click', function () {
+                var url = '/data/', input;
+                input = $(this).parent().prev();
+                if (is.empty(input.val())) {
+                    showAlert('请输入股票代码');
+                    return;
+                }
+                url += input.val();
+                $.getJSON(url, function (result) {
+                    // split the data set into ohlc and volume
+                    if (result.code == '-99999') {
+                        showAlert('您输入的股票代码不存在.');
+                        return;
+                    }
+
+                    var ohlc = [],
+                        volume = [],
+                        data = result.data,
+                        dataLength = data.length,
+                        // set the allowed units for data grouping
+                        groupingUnits = [[
+                            'week',                         // unit name
+                            [1]                             // allowed multiples
+                        ], [
+                            'month',
+                            [1, 2, 3, 4, 6]
+                        ]],
+                        date,
+                        i = 0;
+
+                    for (i; i < dataLength; i += 1) {
+                        date = data[i][0];
+                        console.log(date);
+                        date = Date.parse(date.replace(/-/g, "/"));
+
+                        ohlc.push([
+                            date, // the date
+                            data[i][1], // open
+                            data[i][2], // high
+                            data[i][3], // low
+                            data[i][4] // close
+                        ]);
+
+                        volume.push([
+                            date, // the date
+                            data[i][5] // the volume
+                        ]);
+                    }
+
+
+                    // create the chart
+                    $('#container').highcharts('StockChart', {
+
+                        rangeSelector: {
+                            selected: 1
+                        },
+
+                        title: {
+                            text: result.name + ' (' + result.code + ')'
+                        },
+
+                        yAxis: [{
+                            labels: {
+                                align: 'right',
+                                x: -3
+                            },
+                            title: {
+                                text: 'OHLC'
+                            },
+                            height: '60%',
+                            lineWidth: 2
+                        }, {
+                            labels: {
+                                align: 'right',
+                                x: -3
+                            },
+                            title: {
+                                text: '成交量'
+                            },
+                            top: '65%',
+                            height: '35%',
+                            offset: 0,
+                            lineWidth: 2
+                        }],
+
+                        series: [{
+                            type: 'candlestick',
+                            name: result.name,
+                            data: ohlc,
+                            dataGrouping: {
+                                units: groupingUnits
+                            }
+                        }, {
+                            type: 'column',
+                            name: 'Volume',
+                            data: volume,
+                            yAxis: 1,
+                            dataGrouping: {
+                                units: groupingUnits
+                            }
+                        }]
+                    });
+                });
+            }).parent().prev().on('keydown', function(e) {
+                if (e.keyCode == 13 && !is.empty(this.value)) {
+                    $(this).next().find('button').trigger('click');
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block script %}
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+{% endblock %}
