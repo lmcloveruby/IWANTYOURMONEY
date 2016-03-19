@@ -4,7 +4,6 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.utils import timezone
-
 from iwym.apps.data.models import StockBasics, StockHistDailyData
 
 
@@ -72,7 +71,7 @@ def stock_fetch_basic(request):
             stock.save()
             result['code'] = '0'
     except Exception as e:
-        result['code'] = '1'
+        result['code'] = '-1'
         result['message'] = e.message
     return JsonResponse(result)
 
@@ -82,26 +81,29 @@ def stock_fetch_histdata(request):
     try:
         code = request.GET.get('code')
         df = tushare.get_hist_data(code, start='2016-01-01')
-        records = df.to_records()
-        for record in records:
-            data = StockHistDailyData.objects.get_or_create(code=code, date=record['date'])[0]
-            data.open = record['open']
-            data.close = record['close']
-            data.high = record['high']
-            data.low = record['low']
-            data.volume = record['volume']
-            data.price_change = record['price_change']
-            data.p_change = record['p_change']
-            data.ma5 = record['ma5']
-            data.ma10 = record['ma10']
-            data.ma20 = record['ma20']
-            data.v_ma5 = record['v_ma5']
-            data.v_ma10 = record['v_ma10']
-            data.v_ma20 = record['v_ma20']
-            data.turnover = record['turnover']
-            data.save()
-            result['code'] = '0'
+        if not df.empty:
+            records = df.to_records()
+            for record in records:
+                data = StockHistDailyData.objects.get_or_create(code=code, date=record['date'])[0]
+                data.open = record['open']
+                data.close = record['close']
+                data.high = record['high']
+                data.low = record['low']
+                data.volume = record['volume']
+                data.price_change = record['price_change']
+                data.p_change = record['p_change']
+                data.ma5 = record['ma5']
+                data.ma10 = record['ma10']
+                data.ma20 = record['ma20']
+                data.v_ma5 = record['v_ma5']
+                data.v_ma10 = record['v_ma10']
+                data.v_ma20 = record['v_ma20']
+                data.turnover = record['turnover']
+                data.save()
+                result['code'] = '0'
+        else:
+            result['code'] = '1'
     except Exception as e:
-        result['code'] = '1'
+        result['code'] = '-1'
         result['message'] = e.message
     return JsonResponse(result)

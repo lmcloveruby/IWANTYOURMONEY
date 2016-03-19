@@ -41,6 +41,8 @@
                     success: function (result) {
                         if (result.code == '0') {
                             showChart();
+                        } else if (result.code == '1') {
+                            $('#chart').html('tushare数据源上无此历史数据，-_-!');
                         } else {
                             $('#chart').html('数据获取发生错误: ' + result.message);
                         }

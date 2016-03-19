@@ -71,26 +71,23 @@
     <script>
         $(function () {
             $('.btn-fetch').on('click', function () {
-                var result = confirm('是否继续？')
-                if (result) {
-                    $.ajax({
-                        url: '{% url 'stock_fetch_basic' %}',
-                        dataType: 'json',
-                        beforeSend: function () {
-                            $('.message').html('获取数据过程将耗费较长时间，具体视网络情况及时间段而定，请稍候……');
-                        },
-                        success: function (result) {
-                            if (result.code == '0') {
-                                $('.message').html('数据获取完成，请点击刷新');
-                            } else {
-                                $('.message').html('数据获取发生错误: ' + result.message);
-                            }
-                        },
-                        error: function () {
-                            alert('发生错误')
+                $.ajax({
+                    url: '{% url 'stock_fetch_basic' %}',
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $('.message').html('获取数据过程将耗费较长时间，具体视网络情况及时间段而定，请稍候……');
+                    },
+                    success: function (result) {
+                        if (result.code == '0') {
+                            $('.message').html('数据获取完成，请刷新');
+                        } else {
+                            $('.message').html('数据获取发生错误: ' + result.message);
                         }
-                    })
-                }
+                    },
+                    error: function () {
+                        alert('发生错误')
+                    }
+                })
             });
         });
     </script>
