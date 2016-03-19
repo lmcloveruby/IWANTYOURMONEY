@@ -26,5 +26,6 @@ from .apps.home import views as home_views
 urlpatterns = [
     url(r'^$', home_views.index),
     url(r'^chart/', include('iwym.apps.chart.urls')),
+    url(r'^data/', include('iwym.apps.data.urls')),
     url(r'^admin/', admin.site.urls),
 ]
