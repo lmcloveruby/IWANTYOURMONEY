@@ -1,0 +1,42 @@
+body {
+
+}
+
+.navigation {
+    background: #2e5785;
+}
+
+.navigation .navbar-right {
+    margin-right: 0px;
+}
+
+.navigation ul.navbar-nav li {
+    line-height: 60px;
+    margin-right: 20px;
+    font-size: 16px;
+}
+
+.navigation ul.navbar-nav li:last-child {
+    margin-right: 0;
+}
+
+.navigation ul.navbar-nav li a {
+    color: #fff;
+    padding: 10px;
+    display: inline-block;
+}
+
+.navigation ul.navbar-nav li a:hover, .navigation ul.navbar-nav li a:active {
+    color: #fff;
+    text-decoration: underline;
+    background: none;
+}
+
+ul.list-info > li {
+    width: 175px;
+    margin: 5px 0;
+}
+
+ul.list-info > li > span {
+    font-weight: bold;
+}

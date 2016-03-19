@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  {% load staticfiles %}
+  <link rel="stylesheet" href="{% static 'plugins/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+</head>
+<body>
+<div class="navbar navigation">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-3 logo"><a href="#"></a></div>
+      <div class="col-xs-9 text-right">
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="{% url 'stock_index' %}">数据</a></li>
+            <li><a href="#">研究</a></li>
+            <li><a href="#">交易</a></li>
+            <li><a href="#">设置</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="container">
+  {% block content %}
+  {% endblock %}
+</div>
+<script src="{% static 'plugins/jquery.min.js' %}"></script>
+<script src="{% static 'plugins/bootstrap/js/bootstrap.min.js' %}"></script>
+{% block script %}
+  {% endblock %}
+</body>
+</html>

@@ -30,7 +30,7 @@
 
         $(function () {
             $('#btn_search_stock').on('click', function () {
-                var url = '/data/', input;
+                var url = '/chart/data/', input;
                 input = $(this).parent().prev();
                 if (is.empty(input.val())) {
                     showAlert('请输入股票代码');

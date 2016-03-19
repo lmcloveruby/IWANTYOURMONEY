@@ -13,13 +13,15 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 from .apps.chart import views as chart_views
 
 urlpatterns = [
+    url(r'^data/', include('iwym.apps.data.urls')),
     url(r'^$', chart_views.index),
     url(r'^chart/', chart_views.chart),
-    url(r'^data/(\S+)/$', chart_views.getData),
+    url(r'^chart/data/(\S+)/$', chart_views.get_data),
     url(r'^admin/', admin.site.urls),
 ]
+

@@ -1,0 +1,99 @@
+{% extends "data_index.html" %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-2">
+            <div class="list-group">
+                <a href="{% url 'stock_index' %}" class="list-group-item active">个股</a>
+                <a href="#" class="list-group-item">指数</a>
+                <a href="#" class="list-group-item">行业板块</a>
+            </div>
+        </div>
+        <div class="col-md-10">
+            {% block main %}
+                {% if stocks %}
+                    <p class="message">
+                        数据旧了，是否马上从tushare同步？
+                        <button type="button" class="btn btn-primary btn-fetch">是</button>
+                    </p>
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>代码</th>
+                            <th>名称</th>
+                            <th>行业</th>
+                            <th>市盈率</th>
+                            <th>流通股本</th>
+                            <th>总股本(万)</th>
+                            <th>流动资产</th>
+                            <th>总资产(万)</th>
+                            <th>同步时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for stock in stocks %}
+                            <tr>
+                                <td><a href="{% url 'stock_detail' stock.code %}">{{ stock.code }}</a></td>
+                                <td><a href="{% url 'stock_detail' stock.code %}">{{ stock.name }}</a></td>
+                                <td>{{ stock.industry }}</td>
+                                <td>{{ stock.pe }}</td>
+                                <td>{{ stock.outstanding }}</td>
+                                <td>{{ stock.totals }}</td>
+                                <td>{{ stock.liquid_assets }}</td>
+                                <td>{{ stock.total_assets }}</td>
+                                <td>{{ stock.sync_time | date:'m-d H:i' }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <p>
+                        {% if stocks.has_previous %}
+                            <a href="?page={{ stocks.previous_page_number }}">上页</a>
+                        {% endif %}
+                        Page {{ stocks.number }} of {{ stocks.paginator.num_pages }}.
+                        {% if stocks.has_next %}
+                            <a href="?page={{ stocks.next_page_number }}">下页</a>
+                        {% endif %}
+                    </p>
+
+                {% else %}
+                    <p class="message">
+                        找不到个股数据，是否马上从tushare获取？
+                        <button class="btn btn-primary btn-fetch">是</button>
+                    </p>
+                {% endif %}
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(function () {
+            $('.btn-fetch').on('click', function () {
+                var result = confirm('是否继续？')
+                if (result) {
+                    $.ajax({
+                        url: '{% url 'stock_fetch_basic' %}',
+                        dataType: 'json',
+                        beforeSend: function () {
+                            $('.message').html('获取数据过程将耗费较长时间，具体视网络情况及时间段而定，请稍候……');
+                        },
+                        success: function (result) {
+                            if (result.code == '0') {
+                                $('.message').html('数据获取完成，请点击刷新');
+                            } else {
+                                $('.message').html('数据获取发生错误: ' + result.message);
+                            }
+                        },
+                        error: function () {
+                            alert('发生错误')
+                        }
+                    })
+                }
+            });
+        });
+    </script>
+{% endblock %}
+
+
