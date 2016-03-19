@@ -1,19 +1,15 @@
-#-*- coding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 
 from iwym.apps.chart.models import StockBasics, HistData
 
 
-def index(request):
-    return render(request, 'index.html')
-
-
 def chart(request):
     return render(request, 'chart.html')
 
 
-def getData(request, code):
+def get_data(request, code):
     basic = StockBasics.objects.filter(code=code)
     if basic.exists():
         data = HistData.objects.filter(code=code).order_by('date')\

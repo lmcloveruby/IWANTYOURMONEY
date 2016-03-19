@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """iwym URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -14,17 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-
-# 项目url命名规则及管理:
-# 以app名称作为每个app url的前缀, 每个app目录下都各自管理一个urls.py文件,
-# 并在本文件include所有app目录下的url.py文件.
-
-from django.conf.urls import url, include
-from django.contrib import admin
-from .apps.home import views as home_views
+from django.conf.urls import url
+from iwym.apps.chart import views
 
 urlpatterns = [
-    url(r'^$', home_views.index),
-    url(r'^chart/', include('iwym.apps.chart.urls')),
-    url(r'^admin/', admin.site.urls),
+    url(r'^$', views.chart),
+    url(r'^data/(\S+)/$', views.get_data),
 ]
