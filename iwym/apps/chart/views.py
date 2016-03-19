@@ -1,12 +1,8 @@
-#-*- coding: UTF-8 -*-
+# -*- coding: UTF-8 -*-
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 
 from iwym.apps.data.models import StockBasics, StockHistDailyData
-
-
-def index(request):
-    return render(request, 'index.html')
 
 
 def chart(request):
