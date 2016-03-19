@@ -11,8 +11,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'iwym',
-        'USER': 'root',
-        'PASSWORD': 'root',
+        'USER': 'iwym',
+        'PASSWORD': '123456',
         'HOST': '127.0.0.1',
         'PORT': '3306',
         # 'CHARSET': 'utf8',
