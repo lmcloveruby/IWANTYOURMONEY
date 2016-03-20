@@ -24,12 +24,16 @@
                         <tr>
                             <th>代码</th>
                             <th>名称</th>
-                            <th>行业</th>
+                            <th>最新价</th>
+                            <th>涨跌额</th>
+                            <th>涨跌幅</th>
+                            <th>今开</th>
+                            <th>最高</th>
+                            <th>最低</th>
                             <th>市盈率</th>
-                            <th>流通股本</th>
-                            <th>总股本(万)</th>
                             <th>流动资产</th>
                             <th>总资产(万)</th>
+                            <th>行业</th>
                             <th>同步时间</th>
                         </tr>
                         </thead>
@@ -38,12 +42,16 @@
                             <tr>
                                 <td><a href="{% url 'stock_detail' basic.code %}">{{ basic.code }}</a></td>
                                 <td><a href="{% url 'stock_detail' basic.code %}">{{ basic.name }}</a></td>
-                                <td>{{ basic.industry }}</td>
+                                <td class="{% if basic.is_raise %}raise{% else %}fall{% endif %}">{{ basic.close | default:'--' }}</td>
+                                <td class="{% if basic.is_raise %}raise{% else %}fall{% endif %}">{{ basic.price_change|default:'--' }}</td>
+                                <td class="{% if basic.is_raise %}raise{% else %}fall{% endif %}">{{ basic.p_change |default:'--' }}%</td>
+                                <td>{{ basic.open |default:'--' }}</td>
+                                <td>{{ basic.high|default:'--' }}</td>
+                                <td>{{ basic.low |default:'--' }}</td>
                                 <td>{{ basic.pe }}</td>
-                                <td>{{ basic.outstanding }}</td>
-                                <td>{{ basic.totals }}</td>
                                 <td>{{ basic.liquid_assets }}</td>
                                 <td>{{ basic.total_assets }}</td>
+                                <td>{{ basic.industry }}</td>
                                 <td>{{ basic.sync_time | date:'m-d H:i' }}</td>
                             </tr>
                         {% endfor %}

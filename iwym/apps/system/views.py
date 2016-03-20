@@ -1,5 +1,6 @@
 # coding=utf-8
 import tushare
+from datetime import datetime
 from django.db.models import Max
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -77,7 +78,7 @@ def fetch_stock_histdata(request):
             if code is None or len(code) == 0:
                 basics = StockBasics.objects.all().order_by('code')
             else:
-                basics = StockBasics.objects.get(code=code)
+                basics = StockBasics.objects.filter(code=code)
             basics_len = len(basics)
             for i in range(basics_len):
                 __fetch_histdata(basics[i], start=start, end=end, ktype=ktype)
@@ -97,29 +98,20 @@ def fetch_progress(request):
 
 def __fetch_histdata(basic=StockBasics, start=None, end=None, ktype='D'):
     df = tushare.get_hist_data(basic.code, start=start, end=end, ktype=ktype)
-    if df is None:
-        basic.deal_date = None
-        basic.open = None
-        basic.close = None
-        basic.high = None
-        basic.low = None
-        basic.volume = None
-        basic.price_change = None
-        basic.p_change = None
-        basic.turnover = None
-        basic.save()
-    elif df is not None and not df.empty:
+    if df is not None and not df.empty:
         records = df.to_records()
-        basic.deal_date = records[-1]['date']
-        basic.open = records[-1]['open']
-        basic.close = records[-1]['close']
-        basic.high = records[-1]['high']
-        basic.low = records[-1]['low']
-        basic.volume = records[-1]['volume']
-        basic.price_change = records[-1]['price_change']
-        basic.p_change = records[-1]['p_change']
-        basic.turnover = records[-1]['turnover']
-        basic.save()
+        # 包含记录且行情日期大于基本表的交易日期，则更新对应字段
+        if len(records) > 0 and basic.deal_date < datetime.strptime(records[0]['date'], '%Y-%m-%d').date():
+            basic.deal_date = records[0]['date']
+            basic.open = records[0]['open']
+            basic.close = records[0]['close']
+            basic.high = records[0]['high']
+            basic.low = records[0]['low']
+            basic.volume = records[0]['volume']
+            basic.price_change = records[0]['price_change']
+            basic.p_change = records[0]['p_change']
+            basic.turnover = records[0]['turnover']
+            basic.save()
         for record in records:
             data = StockHistDailyData.objects.get_or_create(code=basic.code, date=record['date'])[0]
             data.open = record['open']

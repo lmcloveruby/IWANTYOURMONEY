@@ -8,6 +8,14 @@
     </div>
     <hr/>
     <ul class="list-unstyled list-inline list-info">
+        <li class="{% if basic.is_raise %}raise{% else %}fall{% endif %}">最新价：<span>{{ basic.close }}</span></li>
+        <li class="{% if basic.is_raise %}raise{% else %}fall{% endif %}">涨跌额：<span>{{ basic.price_change }}</span></li>
+        <li class="{% if basic.is_raise %}raise{% else %}fall{% endif %}">涨跌幅：<span>{{ basic.p_change }}%</span></li>
+        <li>今开：<span>{{ basic.open }}</span></li>
+        <li>最高	：<span>{{ basic.high }}</span></li>
+        <li>最低：<span>{{ basic.low }}</span></li>
+        <li>成交额：<span>{{ basic.volume }}</span></li>
+        <li>换手率：<span>{{ basic.turnover }}%</span></li>
         <li>行业：<span>{{ basic.industry }}</span></li>
         <li>地区：<span>{{ basic.area }}</span></li>
         <li>总资产(万)：<span>{{ basic.total_assets }}</span></li>
@@ -21,7 +29,7 @@
         <li>每股净资：<span>{{ basic.bvps }}</span></li>
         <li>市净率：<span>{{ basic.pb }}</span></li>
         <li>市盈率：<span>{{ basic.pe }}</span></li>
-        <li>上市日期：<span>{{ basic.time_to_market }}</span></li>
+        <li>上市日期：<span>{{ basic.time_to_market}}</span></li>
     </ul>
 
 {% endblock %}
