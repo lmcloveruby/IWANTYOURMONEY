@@ -11,10 +11,13 @@
         </div>
         <div class="col-md-10">
             {% block main %}
-                {% if stocks %}
+                {% if not basics %}
                     <p class="message">
-                        数据旧了，是否马上从tushare同步？
-                        <button type="button" class="btn btn-primary btn-fetch">是</button>
+                        找不到个股数据，请点击<a href="{% url 'fetch_index' %}">这里</a>获取。
+                    </p>
+                {% else %}
+                    <p class="message">
+                        数据旧了？请点击<a href="{% url 'fetch_index' %}">这里</a>更新。
                     </p>
                     <table class="table table-striped">
                         <thead>
@@ -31,66 +34,32 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for stock in stocks %}
+                        {% for basic in basics %}
                             <tr>
-                                <td><a href="{% url 'stock_detail' stock.code %}">{{ stock.code }}</a></td>
-                                <td><a href="{% url 'stock_detail' stock.code %}">{{ stock.name }}</a></td>
-                                <td>{{ stock.industry }}</td>
-                                <td>{{ stock.pe }}</td>
-                                <td>{{ stock.outstanding }}</td>
-                                <td>{{ stock.totals }}</td>
-                                <td>{{ stock.liquid_assets }}</td>
-                                <td>{{ stock.total_assets }}</td>
-                                <td>{{ stock.sync_time | date:'m-d H:i' }}</td>
+                                <td><a href="{% url 'stock_detail' basic.code %}">{{ basic.code }}</a></td>
+                                <td><a href="{% url 'stock_detail' basic.code %}">{{ basic.name }}</a></td>
+                                <td>{{ basic.industry }}</td>
+                                <td>{{ basic.pe }}</td>
+                                <td>{{ basic.outstanding }}</td>
+                                <td>{{ basic.totals }}</td>
+                                <td>{{ basic.liquid_assets }}</td>
+                                <td>{{ basic.total_assets }}</td>
+                                <td>{{ basic.sync_time | date:'m-d H:i' }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                     <p>
-                        {% if stocks.has_previous %}
-                            <a href="?page={{ stocks.previous_page_number }}">上页</a>
+                        {% if basics.has_previous %}
+                            <a href="?page={{ basics.previous_page_number }}">上页</a>
                         {% endif %}
-                        Page {{ stocks.number }} of {{ stocks.paginator.num_pages }}.
-                        {% if stocks.has_next %}
-                            <a href="?page={{ stocks.next_page_number }}">下页</a>
+                        Page {{ basics.number }} of {{ basics.paginator.num_pages }}.
+                        {% if basics.has_next %}
+                            <a href="?page={{ basics.next_page_number }}">下页</a>
                         {% endif %}
-                    </p>
-
-                {% else %}
-                    <p class="message">
-                        找不到个股数据，是否马上从tushare获取？
-                        <button class="btn btn-primary btn-fetch">是</button>
                     </p>
                 {% endif %}
             {% endblock %}
         </div>
     </div>
 {% endblock %}
-
-{% block script %}
-    <script>
-        $(function () {
-            $('.btn-fetch').on('click', function () {
-                $.ajax({
-                    url: '{% url 'stock_fetch_basic' %}',
-                    dataType: 'json',
-                    beforeSend: function () {
-                        $('.message').html('获取数据过程将耗费较长时间，具体视网络情况及时间段而定，请稍候……');
-                    },
-                    success: function (result) {
-                        if (result.code == '0') {
-                            $('.message').html('数据获取完成，请刷新');
-                        } else {
-                            $('.message').html('数据获取发生错误: ' + result.message);
-                        }
-                    },
-                    error: function () {
-                        alert('发生错误')
-                    }
-                })
-            });
-        });
-    </script>
-{% endblock %}
-
-

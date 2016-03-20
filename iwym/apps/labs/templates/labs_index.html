@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}研究{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-2">
+            <div class="list-group">
+                <a href="{% url 'resonate_index' %}" class="list-group-item">多级共振</a>
+            </div>
+        </div>
+        <div class="col-md-10">
+            <p>研究需要基础数据，如果还没有，请先花点时间获取下基础数据，点击<a href="{% url 'fetch_index' %}">这里</a>获取。</p>
+        </div>
+    </div>
+{% endblock %}

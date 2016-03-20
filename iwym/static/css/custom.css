@@ -21,12 +21,17 @@
     color: #fff;
     padding: 10px;
     display: inline-block;
+    background-color: transparent;
 }
 
 .navigation ul.navbar-nav li a:hover, .navigation ul.navbar-nav li a:active {
     color: #fff;
     text-decoration: underline;
     background: none;
+}
+
+p.message {
+    padding: 15px 0;
 }
 
 ul.list-info > li {
@@ -36,4 +41,13 @@ ul.list-info > li {
 
 ul.list-info > li > span {
     font-weight: bold;
+}
+
+h3.form-section, h4.form-section {
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+    font-size: 16px;
+    font-weight: bold;
+
 }

@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'iwym.apps.home',
     'iwym.apps.chart',
     'iwym.apps.data',
+    'iwym.apps.labs',
+    'iwym.apps.system',
 ]
 
 MIDDLEWARE_CLASSES = [
