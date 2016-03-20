@@ -27,5 +27,7 @@ urlpatterns = [
     url(r'^$', home_views.index),
     url(r'^chart/', include('iwym.apps.chart.urls')),
     url(r'^data/', include('iwym.apps.data.urls')),
+    url(r'^labs/', include('iwym.apps.labs.urls')),
+    url(r'^system/', include('iwym.apps.system.urls')),
     url(r'^admin/', admin.site.urls),
 ]

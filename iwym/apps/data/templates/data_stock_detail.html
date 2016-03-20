@@ -1,27 +1,27 @@
 {% extends 'data_stock_index.html' %}
 {% load staticfiles %}
 {% block main %}
-    <h4>{{ stock.name }} ({{ stock.code }})</h4>
+    <h4>{{ basic.name }} ({{ basic.code }})</h4>
     <hr/>
     <div id="chart">
 
     </div>
     <hr/>
     <ul class="list-unstyled list-inline list-info">
-        <li>行业：<span>{{ stock.industry }}</span></li>
-        <li>地区：<span>{{ stock.area }}</span></li>
-        <li>总资产(万)：<span>{{ stock.total_assets }}</span></li>
-        <li>流动资产：<span>{{ stock.liquid_assets }}</span></li>
-        <li>固定资产：<span>{{ stock.fixed_assets }}</span></li>
-        <li>总股本(万)：<span>{{ stock.totals }}</span></li>
-        <li>流通股本：<span>{{ stock.outstanding }}</span></li>
-        <li>公积金：<span>{{ stock.reserved }}</span></li>
-        <li>每股公积金：<span>{{ stock.reserved_pershare }}</span></li>
-        <li>每股收益：<span>{{ stock.esp }}</span></li>
-        <li>每股净资：<span>{{ stock.bvps }}</span></li>
-        <li>市净率：<span>{{ stock.pb }}</span></li>
-        <li>市盈率：<span>{{ stock.pe }}</span></li>
-        <li>上市日期：<span>{{ stock.time_to_market }}</span></li>
+        <li>行业：<span>{{ basic.industry }}</span></li>
+        <li>地区：<span>{{ basic.area }}</span></li>
+        <li>总资产(万)：<span>{{ basic.total_assets }}</span></li>
+        <li>流动资产：<span>{{ basic.liquid_assets }}</span></li>
+        <li>固定资产：<span>{{ basic.fixed_assets }}</span></li>
+        <li>总股本(万)：<span>{{ basic.totals }}</span></li>
+        <li>流通股本：<span>{{ basic.outstanding }}</span></li>
+        <li>公积金：<span>{{ basic.reserved }}</span></li>
+        <li>每股公积金：<span>{{ basic.reserved_pershare }}</span></li>
+        <li>每股收益：<span>{{ basic.esp }}</span></li>
+        <li>每股净资：<span>{{ basic.bvps }}</span></li>
+        <li>市净率：<span>{{ basic.pb }}</span></li>
+        <li>市盈率：<span>{{ basic.pe }}</span></li>
+        <li>上市日期：<span>{{ basic.time_to_market }}</span></li>
     </ul>
 
 {% endblock %}
@@ -30,132 +30,107 @@
     <script src="{% static 'plugins/highstock/js/highstock.js' %}"></script>
     <script>
         $(function () {
-            $('#chart').on('click', '.btn-fetch', function () {
-                $.ajax({
-                    url: '{% url 'stock_fetch_histdata' %}',
-                    data: {code: '{{ stock.code }}'},
-                    dataType: 'json',
-                    beforeSend: function () {
-                        $('#chart').html('获取数据过程将耗费较长时间，具体视网络情况及时间段而定，请稍候……');
-                    },
-                    success: function (result) {
-                        if (result.code == '0') {
-                            showChart();
-                        } else if (result.code == '1') {
-                            $('#chart').html('tushare数据源上无此历史数据，-_-!');
-                        } else {
-                            $('#chart').html('数据获取发生错误: ' + result.message);
-                        }
+            $.ajax({
+                url: '{% url 'stock_histdata' basic.code %}',
+                data: {type: 'D'},
+                dataType: 'json',
+                beforeSend: function () {
+                    $('#chart').html('正在显示，请稍候……');
+                },
+                success: function (result) {
+                    if (result.code == '1') {
+                        $('#chart').html('找不到历史行情数据，请点击<a href="{% url 'fetch_index' %}?code={{  basic.code }}#hist">这里</a>获取。');
+                        return;
                     }
-                })
-            });
 
-            showChart();
+                    var ohlc = [],
+                            volume = [],
+                            data = result.data,
+                            dataLength = data.length,
+                            groupingUnits = [[
+                                'week',                         // unit name
+                                [1]                             // allowed multiples
+                            ], [
+                                'month',
+                                [1, 2, 3, 4, 6]
+                            ]],
+                            date,
+                            i = 0;
 
-            function showChart() {
-                $.ajax({
-                    url: '{% url 'stock_histdata' stock.code %}',
-                    data: {type: 'D'},
-                    dataType: 'json',
-                    beforeSend: function () {
-                        $('#chart').html('正在显示，请稍候……');
-                    },
-                    success: function (result) {
-                        if (result.code == '1') {
-                            $('#chart').html('找不到历史行情数据，是否马上获取？<button type="button" class="btn btn-primary btn-fetch">是</button>');
-                            return;
-                        }
+                    for (i; i < dataLength; i += 1) {
+                        date = data[i][0];
+                        console.log(date);
+                        date = Date.parse(date.replace(/-/g, "/"));
 
+                        ohlc.push([
+                            date, // the date
+                            data[i][1], // open
+                            data[i][2], // high
+                            data[i][3], // low
+                            data[i][4] // close
+                        ]);
 
-                        var ohlc = [],
-                                volume = [],
-                                data = result.data,
-                                dataLength = data.length,
-                                groupingUnits = [[
-                                    'week',                         // unit name
-                                    [1]                             // allowed multiples
-                                ], [
-                                    'month',
-                                    [1, 2, 3, 4, 6]
-                                ]],
-                                date,
-                                i = 0;
-
-                        for (i; i < dataLength; i += 1) {
-                            date = data[i][0];
-                            console.log(date);
-                            date = Date.parse(date.replace(/-/g, "/"));
-
-                            ohlc.push([
-                                date, // the date
-                                data[i][1], // open
-                                data[i][2], // high
-                                data[i][3], // low
-                                data[i][4] // close
-                            ]);
-
-                            volume.push([
-                                date, // the date
-                                data[i][5] // the volume
-                            ]);
-                        }
+                        volume.push([
+                            date, // the date
+                            data[i][5] // the volume
+                        ]);
+                    }
 
 
-                        // create the chart
-                        $('#chart').highcharts('StockChart', {
+                    // create the chart
+                    $('#chart').highcharts('StockChart', {
 
-                            rangeSelector: {
-                                selected: 1
+                        rangeSelector: {
+                            selected: 1
+                        },
+
+                        title: {
+                            text: result.name + ' (' + result.code + ')'
+                        },
+
+                        yAxis: [{
+                            labels: {
+                                align: 'right',
+                                x: -3
                             },
-
                             title: {
-                                text: result.name + ' (' + result.code + ')'
+                                text: 'OHLC'
                             },
+                            height: '60%',
+                            lineWidth: 2
+                        }, {
+                            labels: {
+                                align: 'right',
+                                x: -3
+                            },
+                            title: {
+                                text: '成交量'
+                            },
+                            top: '65%',
+                            height: '35%',
+                            offset: 0,
+                            lineWidth: 2
+                        }],
 
-                            yAxis: [{
-                                labels: {
-                                    align: 'right',
-                                    x: -3
-                                },
-                                title: {
-                                    text: 'OHLC'
-                                },
-                                height: '60%',
-                                lineWidth: 2
-                            }, {
-                                labels: {
-                                    align: 'right',
-                                    x: -3
-                                },
-                                title: {
-                                    text: '成交量'
-                                },
-                                top: '65%',
-                                height: '35%',
-                                offset: 0,
-                                lineWidth: 2
-                            }],
-
-                            series: [{
-                                type: 'candlestick',
-                                name: result.name,
-                                data: ohlc,
-                                dataGrouping: {
-                                    units: groupingUnits
-                                }
-                            }, {
-                                type: 'column',
-                                name: 'Volume',
-                                data: volume,
-                                yAxis: 1,
-                                dataGrouping: {
-                                    units: groupingUnits
-                                }
-                            }]
-                        });
-                    }
-                })
-            }
+                        series: [{
+                            type: 'candlestick',
+                            name: result.name,
+                            data: ohlc,
+                            dataGrouping: {
+                                units: groupingUnits
+                            }
+                        }, {
+                            type: 'column',
+                            name: 'Volume',
+                            data: volume,
+                            yAxis: 1,
+                            dataGrouping: {
+                                units: groupingUnits
+                            }
+                        }]
+                    });
+                }
+            });
         })
 
     </script>

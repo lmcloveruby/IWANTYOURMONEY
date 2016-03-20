@@ -20,7 +20,16 @@ class StockBasics(models.Model):
     esp = models.FloatField('每股收益', null=True)
     bvps = models.FloatField('每股净资', null=True)
     pb = models.FloatField('市净率', null=True)
-    time_to_market = models.DateField('上市日期', null=True)
+    time_to_market = models.CharField('上市日期', null=True, max_length=10)
+    deal_date = models.DateField('交易日期', null=True)
+    open = models.FloatField('开盘价', null=True)
+    high = models.FloatField('最高价', null=True)
+    close = models.FloatField('收盘价', null=True)
+    low = models.FloatField('最低价', null=True)
+    volume = models.FloatField('成交量', null=True)
+    price_change = models.FloatField('价格变动', null=True)
+    p_change = models.FloatField('涨跌幅', null=True)
+    turnover = models.FloatField('换手率', null=True)
     sync_time = models.DateTimeField('同步时间', null=True)
 
     class Meta:
