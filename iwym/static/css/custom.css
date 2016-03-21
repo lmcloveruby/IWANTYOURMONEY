@@ -49,5 +49,12 @@ h3.form-section, h4.form-section {
     border-bottom: 1px solid #ccc;
     font-size: 16px;
     font-weight: bold;
+}
 
+.raise {
+    color: #fe0002 !important;
+}
+
+.fall {
+    color: #009900 !important;
 }

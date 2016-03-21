@@ -36,6 +36,12 @@ class StockBasics(models.Model):
         managed = True
         db_table = 'stock_basics'
 
+    def is_raise(self):
+        return self.close >= self.open
+
+    def p_change_percent(self):
+        return self.p_change * 10
+
     def __str__(self):
         return "{0} ({1})".format(self.name, self.code)
 
