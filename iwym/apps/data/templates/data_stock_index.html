@@ -11,7 +11,7 @@
         </div>
         <div class="col-md-10">
             {% block main %}
-                {% if not basics %}
+                {% if not datas %}
                     <p class="message">
                         找不到个股数据，请点击<a href="{% url 'fetch_index' %}">这里</a>获取。
                     </p>
@@ -38,32 +38,32 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {% for basic in basics %}
+                        {% for data in datas %}
                             <tr>
-                                <td><a href="{% url 'stock_detail' basic.code %}">{{ basic.code }}</a></td>
-                                <td><a href="{% url 'stock_detail' basic.code %}">{{ basic.name }}</a></td>
-                                <td class="{% if basic.is_raise %}raise{% else %}fall{% endif %}">{{ basic.close | default:'--' }}</td>
-                                <td class="{% if basic.is_raise %}raise{% else %}fall{% endif %}">{{ basic.price_change|default:'--' }}</td>
-                                <td class="{% if basic.is_raise %}raise{% else %}fall{% endif %}">{{ basic.p_change |default:'--' }}%</td>
-                                <td>{{ basic.open |default:'--' }}</td>
-                                <td>{{ basic.high|default:'--' }}</td>
-                                <td>{{ basic.low |default:'--' }}</td>
-                                <td>{{ basic.pe }}</td>
-                                <td>{{ basic.liquid_assets }}</td>
-                                <td>{{ basic.total_assets }}</td>
-                                <td>{{ basic.industry }}</td>
-                                <td>{{ basic.sync_time | date:'m-d H:i' }}</td>
+                                <td><a href="{% url 'stock_detail' data.ggid %}">{{ data.dm }}</a></td>
+                                <td><a href="{% url 'stock_detail' data.ggid %}">{{ data.mc }}</a></td>
+                                <td class="{% if data.is_raise %}raise{% else %}fall{% endif %}">{{ data.spj | default:'--' }}</td>
+                                <td class="{% if data.is_raise %}raise{% else %}fall{% endif %}">{{ data.zde | default:'--' }}</td>
+                                <td class="{% if data.is_raise %}raise{% else %}fall{% endif %}">{{ data.zdf | default:'--' }}%</td>
+                                <td>{{ data.kpj | default:'--' }}</td>
+                                <td>{{ data.zgj | default:'--' }}</td>
+                                <td>{{ data.zdj | default:'--' }}</td>
+                                <td>{{ data.syl }}</td>
+                                <td>{{ data.ldzc }}</td>
+                                <td>{{ data.zzc }}</td>
+                                <td>{{ data.sshy }}</td>
+                                <td>{{ data.tbsj | date:'m-d H:i' }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                     <p>
-                        {% if basics.has_previous %}
-                            <a href="?page={{ basics.previous_page_number }}">上页</a>
+                        {% if datas.has_previous %}
+                            <a href="?page={{ datas.previous_page_number }}">上页</a>
                         {% endif %}
-                        Page {{ basics.number }} of {{ basics.paginator.num_pages }}.
-                        {% if basics.has_next %}
-                            <a href="?page={{ basics.next_page_number }}">下页</a>
+                        Page {{ datas.number }} of {{ datas.paginator.num_pages }}.
+                        {% if datas.has_next %}
+                            <a href="?page={{ datas.next_page_number }}">下页</a>
                         {% endif %}
                     </p>
                 {% endif %}

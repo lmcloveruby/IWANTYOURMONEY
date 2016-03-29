@@ -94,7 +94,8 @@ class SjGpJb(models.Model):
     mgsy = models.FloatField('每股收益', null=True)
     mgjz = models.FloatField('每股净资', null=True)
     sjl = models.FloatField('市净率', null=True)
-    ssrq = models.DateTimeField('上市日期', null=True)
+    ssrq = models.DateField('上市日期', null=True)
+    jyrq = models.DateField('交易日期', null=True)
     zdf = models.FloatField('涨跌幅', null=True)
     zde = models.FloatField('涨跌额', null=True)
     kpj = models.FloatField('开盘价', null=True)
@@ -141,6 +142,7 @@ class _BaseSjLshq(models.Model):
     jl5 = models.FloatField('5均量', null=True)
     jl10 = models.FloatField('10均量', null=True)
     jl20 = models.FloatField('20均量', null=True)
+    hsl = models.FloatField('换手率', null=True)
 
     class Meta:
         abstract = True
