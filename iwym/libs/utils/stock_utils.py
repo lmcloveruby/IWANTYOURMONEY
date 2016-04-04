@@ -9,6 +9,8 @@ STOCK_TYPE = {
 }
 
 
+
+
 def gen_ggid(dm):
     """生成个股主键: 前缀 + dm, 前缀根据代码分为SH(上海)和SZ(上证)
     :param dm: 个股代码

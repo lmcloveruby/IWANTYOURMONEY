@@ -122,7 +122,16 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
 
-# django-rq 队列
+#
+"""
+    django-rq-scheduler 队列配置
+    使用简单说明
+    需要安装redis数据库,用于任务的分发以及状态处理
+    环境配置完毕后,使用步骤
+    1.启动redis: src/redis-server
+    2.启动rqworker: python manage.py rqworker default (若有job执行,console会有log输出)
+    3.启动rqscheduler: python manage.py rqscheduler
+"""
 RQ_QUEUES = {
     'default': {
         'HOST': 'localhost',
