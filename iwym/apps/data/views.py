@@ -4,7 +4,7 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from iwym.apps.data.models import StockBasics, StockHistDailyData, SjGpJb, SjLshqD
+from iwym.apps.data.models import SjGpJb, SjLshqD
 
 
 def index(request):

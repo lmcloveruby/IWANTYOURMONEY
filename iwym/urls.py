@@ -29,5 +29,6 @@ urlpatterns = [
     url(r'^data/', include('iwym.apps.data.urls')),
     url(r'^labs/', include('iwym.apps.labs.urls')),
     url(r'^system/', include('iwym.apps.system.urls')),
+    url(r'^django-rq/', include('django_rq.urls')),
     url(r'^admin/', admin.site.urls),
 ]
