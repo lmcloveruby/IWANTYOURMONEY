@@ -1,7 +1,7 @@
 # coding=utf-8
 from iwym.apps.data.models import SjLshqD, SjGpJb, SjLshqW, SjLshqM
 from datetime import datetime
-from iwym.libs.utils import str_utils, stock_utils
+from iwym.libs.utils import stock_utils
 import tushare as ts
 import os
 import csv
@@ -9,11 +9,12 @@ import csv
 from iwym.libs.utils import str_utils
 
 """
-数据初始化工具类,注意不要轻易调用,因为需要比较长的时间,比较合理的方式是将所有数据文件保存到本地
-通过csv文件初始化数据.
-2016-04-02 抓取了所有日线数据,用了3.75小时,总计171w条数据,容量为250m
+数据初始化工具类
+两种方式初始化:
+1.调取tushare接口直接存入数据库.
+2.先调取tushare接口保存为csv格式文件,再通过csv文件初始化.
 
-目前都没有抓取指数数据
+2016-04-02 抓取了所有日线数据,用了3.75小时,总计171w条数据,容量为250m
 """
 
 # 以下4个方法感觉不适合结构型数据库来存储了,不实现了
@@ -30,24 +31,25 @@ def init_30m_data():
 
 
 def init_hour_data():
+    print('reload utils')
     pass
 
 """
     初始化指数股票基本
+    sh,sz,hs300,sz50,zxb,cyb
 """
 def init_zs_gpjb():
-    # sh,sz,hs300,sz50,zxb,cyb
-    zs = SjGpJb(ggid='SH000001', dm='000001', mc='上证指数')
+    zs = SjGpJb(ggid='SH000001', dm='000001', mc='上证指数', py='szzs')
     zs.save()
-    zs = SjGpJb(ggid='SZ399001', dm='399001', mc='深证成指')
+    zs = SjGpJb(ggid='SZ399001', dm='399001', mc='深证成指', py='szcz')
     zs.save()
-    zs = SjGpJb(ggid='?', dm='?', mc='沪深300') # TODO 待确认
+    zs = SjGpJb(ggid='SZ399300', dm='399300', mc='沪深300', py='hssb')
     zs.save()
-    zs = SjGpJb(ggid='SH000016', dm='000016', mc='上证50')
+    zs = SjGpJb(ggid='SH000016', dm='000016', mc='上证50', py='szwl')
     zs.save()
-    zs = SjGpJb(ggid='SZ155902', dm='155902', mc='中小板指')
+    zs = SjGpJb(ggid='SZ155902', dm='155902', mc='中小板指', py='zxbz')
     zs.save()
-    zs = SjGpJb(ggid='SZ399006', dm='399006', mc='创业板指')
+    zs = SjGpJb(ggid='SZ399006', dm='399006', mc='创业板指', py='cyzs')
     zs.save()
 
 """
